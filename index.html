@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FileFinder Pro — Retrouvez vos fichiers en 1 seconde</title>
+  <meta name="description" content="FileFinder Pro est un moteur de recherche de fichiers ultra-rapide pour Windows. Trouvez n'importe quel fichier en moins d'une seconde grâce à l'indexation SQLite.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #0f0f17;
+      --panel:    #16161f;
+      --card:     #1c1c28;
+      --border:   #2a2a3a;
+      --accent:   #6c63ff;
+      --accent2:  #9d97ff;
+      --green:    #00e5a0;
+      --text:     #dde3f0;
+      --dim:      #6b7280;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 1.2rem; font-weight: 700; color: var(--accent2); }
+    .logo span { color: var(--green); }
+    nav a {
+      color: var(--dim);
+      text-decoration: none;
+      margin-left: 28px;
+      font-size: .9rem;
+      transition: color .2s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 80px;
+      background: radial-gradient(ellipse at 50% 0%, #2a2060 0%, transparent 70%);
+    }
+    .badge {
+      display: inline-block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--accent2);
+      font-size: .8rem;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    h1 span { color: var(--accent2); }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--dim);
+      max-width: 580px;
+      margin: 0 auto 40px;
+    }
+    .btn-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: background .2s, transform .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      transition: border-color .2s, transform .15s;
+    }
+    .btn-secondary:hover { border-color: var(--accent2); transform: translateY(-2px); }
+    .meta {
+      margin-top: 16px;
+      font-size: .82rem;
+      color: var(--dim);
+    }
+
+    /* ── STATS ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 50px 20px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent2);
+    }
+    .stat-label { font-size: .85rem; color: var(--dim); margin-top: 4px; }
+
+    /* ── FEATURES ── */
+    section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--dim);
+      margin-bottom: 50px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: border-color .2s, transform .2s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    .feature-card p { color: var(--dim); font-size: .9rem; }
+
+    /* ── COMPARAISON ── */
+    .compare-section {
+      background: var(--panel);
+      padding: 80px 20px;
+    }
+    .compare-table {
+      max-width: 800px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    .compare-table th {
+      padding: 14px 20px;
+      text-align: center;
+      font-size: .95rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .compare-table th:first-child { text-align: left; }
+    .compare-table th.highlight { color: var(--accent2); }
+    .compare-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: .9rem;
+      text-align: center;
+    }
+    .compare-table td:first-child { text-align: left; color: var(--dim); }
+    .yes { color: var(--green); font-weight: 700; }
+    .no  { color: #ff5f5f; }
+    .partial { color: var(--accent2); }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .price-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, #1e1b40, #1c1c28);
+    }
+    .plan-name { font-size: 1rem; color: var(--dim); margin-bottom: 8px; }
+    .plan-price {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .plan-price span { font-size: 1rem; color: var(--dim); font-weight: 400; }
+    .plan-features {
+      list-style: none;
+      margin: 24px 0;
+      text-align: left;
+    }
+    .plan-features li {
+      padding: 6px 0;
+      font-size: .9rem;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .plan-features li::before { content: "✓"; color: var(--green); font-weight: 700; }
+    .plan-features li.disabled::before { content: "✗"; color: #ff5f5f; }
+    .plan-features li.disabled { opacity: .5; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--dim);
+      font-size: .85rem;
+    }
+    footer a { color: var(--accent2); text-decoration: none; }
+
+    /* ── DOWNLOAD SECTION ── */
+    .download-section {
+      text-align: center;
+      padding: 80px 20px;
+      background: radial-gradient(ellipse at 50% 100%, #2a2060 0%, transparent 70%);
+    }
+    .download-box {
+      display: inline-block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 60px;
+      margin-top: 30px;
+    }
+    .file-info {
+      font-size: .85rem;
+      color: var(--dim);
+      margin-top: 12px;
+    }
+
+    @media (max-width: 600px) {
+      nav .nav-links { display: none; }
+      .stats { gap: 30px; }
+      .download-box { padding: 30px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">⚡ FileFinder <span>Pro</span></div>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#compare">Comparaison</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#download">Télécharger</a>
+    <a href="https://github.com/Morgane-bit/filefinder-pro" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">🚀 Version 3.0.1 disponible</div>
+  <h1>Retrouvez n'importe quel fichier<br><span>en moins d'une seconde</span></h1>
+  <p class="subtitle">
+    FileFinder Pro indexe votre disque dur et vous permet de trouver
+    instantanément n'importe quel document, image ou fichier —
+    sans attendre, sans frustration.
+  </p>
+  <div class="btn-group">
+    <a href="https://github.com/Morgane-bit/filefinder-pro/releases/latest/download/FileFinder_Pro_v3_Setup.exe"
+       class="btn-primary">
+      ⬇ Télécharger gratuitement
+    </a>
+    <a href="#features" class="btn-secondary">Voir les fonctionnalités</a>
+  </div>
+  <p class="meta">Windows 10/11 · Gratuit · 13.6 Mo · Aucune pub</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">&lt; 1s</div>
+    <div class="stat-label">Temps de recherche</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">1M+</div>
+    <div class="stat-label">Fichiers indexables</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Gratuit pour usage personnel</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Publicités</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <h2>Tout ce dont vous avez besoin</h2>
+  <p class="section-sub">Un outil simple, rapide et puissant — sans abonnement obligatoire</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Recherche instantanée</h3>
+      <p>Grâce à l'indexation SQLite FTS5, chaque recherche retourne des résultats en moins d'une seconde, même sur un disque de 1 To.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👁</div>
+      <h3>Aperçu du contenu</h3>
+      <p>Visualisez le contenu de vos fichiers texte, code, CSV et JSON directement dans le logiciel, sans les ouvrir.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⭐</div>
+      <h3>Fichiers favoris</h3>
+      <p>Épinglez vos fichiers importants pour y accéder en un clic à tout moment, depuis l'onglet Favoris.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🕐</div>
+      <h3>Historique des recherches</h3>
+      <p>Retrouvez et relancez n'importe laquelle de vos 100 dernières recherches en double-cliquant dessus.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Statistiques disque</h3>
+      <p>Visualisez quels types de fichiers et quels dossiers occupent le plus d'espace sur votre disque dur.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Filtres avancés</h3>
+      <p>Filtrez par type de fichier, taille en Mo, ou plage de dates pour affiner vos résultats précisément.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARAISON -->
+<div class="compare-section" id="compare">
+  <section>
+    <h2>Pourquoi FileFinder Pro ?</h2>
+    <p class="section-sub">Comparé aux solutions existantes</p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Fonctionnalité</th>
+          <th class="highlight">FileFinder Pro</th>
+          <th>Explorateur Windows</th>
+          <th>Everything</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Recherche rapide (indexée)</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="yes">✓</span></td>
+        </tr>
+        <tr>
+          <td>Aperçu du contenu</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+        <tr>
+          <td>Favoris de fichiers</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+        <tr>
+          <td>Historique des recherches</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+        <tr>
+          <td>Statistiques disque</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+        <tr>
+          <td>Filtres taille et date</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="partial">Partiel</span></td>
+          <td><span class="yes">✓</span></td>
+        </tr>
+        <tr>
+          <td>Mise à jour automatique</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="no">✗</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+        <tr>
+          <td>Interface en français</td>
+          <td><span class="yes">✓</span></td>
+          <td><span class="partial">Partiel</span></td>
+          <td><span class="no">✗</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- PRICING -->
+<section id="pricing">
+  <h2>Tarifs simples et transparents</h2>
+  <p class="section-sub">Commencez gratuitement, passez Pro quand vous en avez besoin</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan-name">Gratuit</div>
+      <div class="plan-price">0€ <span>/ toujours</span></div>
+      <ul class="plan-features">
+        <li>Recherche par indexation</li>
+        <li>Aperçu des fichiers</li>
+        <li>10 favoris</li>
+        <li>Historique (10 entrées)</li>
+        <li>Statistiques de base</li>
+        <li class="disabled">Recherche par IA</li>
+        <li class="disabled">Recherche dans PDF/Word</li>
+        <li class="disabled">Support prioritaire</li>
+      </ul>
+      <a href="https://github.com/Morgane-bit/filefinder-pro/releases/latest/download/FileFinder_Pro_v3_Setup.exe"
+         class="btn-secondary" style="display:block;text-align:center;padding:12px;">
+        Télécharger
+      </a>
+    </div>
+    <div class="price-card featured">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">4,99€ <span>/ mois</span></div>
+      <ul class="plan-features">
+        <li>Tout du plan Gratuit</li>
+        <li>Favoris illimités</li>
+        <li>Historique illimité</li>
+        <li>Recherche par IA 🤖</li>
+        <li>Recherche dans PDF/Word</li>
+        <li>Statistiques avancées</li>
+        <li>Support prioritaire</li>
+        <li>Mises à jour en avant-première</li>
+      </ul>
+      <a href="#" class="btn-primary" style="display:block;text-align:center;">
+        Bientôt disponible
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<div class="download-section" id="download">
+  <h2>Prêt à retrouver vos fichiers ?</h2>
+  <p style="color:var(--dim);margin-top:10px;">Téléchargement gratuit · Aucune inscription · Windows 10/11</p>
+  <div class="download-box">
+    <a href="https://github.com/Morgane-bit/filefinder-pro/releases/latest/download/FileFinder_Pro_v3_Setup.exe"
+       class="btn-primary" style="font-size:1.1rem;padding:16px 40px;">
+      ⬇ Télécharger FileFinder Pro
+    </a>
+    <p class="file-info">
+      Version 3.0.1 · Windows 10/11 · 13.6 Mo<br>
+      © 2025 Morgane-bit — Tous droits réservés
+    </p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    © 2025 <strong>Morgane-bit</strong> — Tous droits réservés &nbsp;·&nbsp;
+    <a href="https://github.com/Morgane-bit/filefinder-pro" target="_blank">GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/Morgane-bit/filefinder-pro/releases" target="_blank">Releases</a>
+  </p>
+  <p style="margin-top:8px;font-size:.8rem;">
+    FileFinder Pro est un logiciel propriétaire. Toute reproduction sans autorisation est interdite.
+  </p>
+</footer>
+
+</body>
+</html>
